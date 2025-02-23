@@ -33,7 +33,11 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - lighthouse
+        {{- if .Values.lighthouse.testMode }}
+        - help
+        {{- else }}
         - beacon
+        {{- end }}
         args:
         {{ with .Values.lighthouse.beacon -}}
         - --network={{ $network }}
@@ -154,7 +158,11 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - lighthouse
+        {{- if .Values.lighthouse.testMode }}
+        - help
+        {{- else }}
         - vc
+        {{- end }}
         args:
         {{ with .Values.lighthouse.validator -}}
         - --network={{ $network }}

@@ -9,6 +9,7 @@ storage:
 # nodeSelector:
 #   key: value
 lighthouse:
+  testMode: false
   network: mainnet
   metrics:
     enabled: false
