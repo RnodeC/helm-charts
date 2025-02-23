@@ -22,10 +22,10 @@ spec:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
       serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+        {{- end }}
       containers:
       {{- if $bn }}
       - name: lighthouse-bn
@@ -33,7 +33,11 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - lighthouse
+        {{- if .Values.lighthouse.testMode }}
+        - help
+        {{- else }}
         - beacon
+        {{- end }}
         args:
         {{ with .Values.lighthouse.beacon -}}
         - --network={{ $network }}
@@ -154,7 +158,11 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - lighthouse
+        {{- if .Values.lighthouse.testMode }}
+        - help
+        {{- else }}
         - vc
+        {{- end }}
         args:
         {{ with .Values.lighthouse.validator -}}
         - --network={{ $network }}
@@ -247,7 +255,9 @@ spec:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
+      {{- if .Values.storage.storageClassName }}
       storageClassName: {{ .Values.storage.storageClassName }}
+      {{- end }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:

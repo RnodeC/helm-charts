@@ -1,14 +1,14 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v5.3.0
+  tag: v6.0.1
 storage:
   storageClassName: local
   pvcSize: 1200Gi
-# nodeSelector is optional. Uncomment to use.
-# nodeSelector:
-#   key: value
+# Tolerations are optional. Uncomment to use.
+tolerations: []
 lighthouse:
+  testMode: false
   network: mainnet
   metrics:
     enabled: false
