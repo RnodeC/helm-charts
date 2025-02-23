@@ -5,9 +5,8 @@ image:
 storage:
   storageClassName: local
   pvcSize: 1200Gi
-# nodeSelector is optional. Uncomment to use.
-# nodeSelector:
-#   key: value
+# Tolerations are optional. Uncomment to use.
+tolerations: []
 lighthouse:
   testMode: false
   network: mainnet
