@@ -255,7 +255,9 @@ spec:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
+      {{- if .Values.storage.storageClassName }}
       storageClassName: {{ .Values.storage.storageClassName }}
+      {{- end }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
