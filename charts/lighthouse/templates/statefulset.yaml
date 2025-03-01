@@ -25,7 +25,7 @@ spec:
       {{- if .Values.tolerations }}
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
-        {{- end }}
+      {{- end }}
       containers:
       {{- if $bn }}
       - name: lighthouse-bn
