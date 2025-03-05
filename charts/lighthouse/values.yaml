@@ -42,7 +42,12 @@ lighthouse:
     checkpointSync:
       enabled: true
       url: https://mainnet.checkpoint.sigp.io
+    # When true, uses --purge-db-force flag which purges the database without confirmation
+    # This is required in non-interactive environments like Kubernetes
     purgeDb: false
+    # When true, uses --purge-db-force flag which purges the database without requiring confirmation
+    # This is safer to use in non-interactive environments like Kubernetes
+    purgeDbForce: false
     # this defines the connection to the execution layer - required by a consensus client like lighthouse
     # all of these values are required if in beacon mode
     # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes, so you can still check things out

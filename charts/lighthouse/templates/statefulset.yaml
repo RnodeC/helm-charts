@@ -76,6 +76,9 @@ spec:
         {{- if .purgeDb }}
         - --purge-db
         {{- end }}
+        {{- if .purgeDbForce }}
+        - --purge-db-force
+        {{- end }}
         {{- with .enr }}
         {{- if and .host .port }}
         - --disable-enr-auto-update
