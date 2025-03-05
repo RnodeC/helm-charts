@@ -37,7 +37,6 @@ spec:
         - help
         {{- else }}
         - beacon
-        {{- end }}
         args:
         {{ with .Values.lighthouse.beacon -}}
         - --network={{ $network }}
@@ -93,7 +92,10 @@ spec:
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
+        {{- end }}
+        {{- end }}
         ports:
+          {{ with .Values.lighthouse.beacon -}}
           {{ if .http.enabled -}}
           - name: http-bn
             containerPort: {{ .http.port }}
@@ -123,22 +125,37 @@ spec:
           successThreshold: 1
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         readinessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         startupProbe:
           initialDelaySeconds: 120
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         resources:
           {{- toYaml .Values.lighthouse.beacon.resources | nindent 10 }}
         securityContext:
@@ -165,7 +182,6 @@ spec:
         - help
         {{- else }}
         - vc
-        {{- end }}
         args:
         {{ with .Values.lighthouse.validator -}}
         - --network={{ $network }}
@@ -192,7 +208,10 @@ spec:
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
+        {{- end }}
+        {{- end }}
         ports:
+          {{ with .Values.lighthouse.validator -}}
           {{ if .http.enabled -}}
           - name: http-vc
             containerPort: {{ .http.port }}
@@ -203,30 +222,44 @@ spec:
             containerPort: {{ .metricsPort }}
             protocol: TCP
           {{- end }}
-        {{- end }}
-        {{- end }}
+          {{- end }}
         livenessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         readinessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         startupProbe:
           initialDelaySeconds: 120
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         resources:
           {{- toYaml .Values.lighthouse.validator.resources | nindent 10 }}
         securityContext:
@@ -240,6 +273,7 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
