@@ -31,11 +31,15 @@ spec:
       - name: lighthouse-bn
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
+        {{- if .Values.lighthouse.testMode }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
+        {{- else }}
         command:
         - lighthouse
-        {{- if .Values.lighthouse.testMode }}
-        - help
-        {{- else }}
         - beacon
         args:
         {{ with .Values.lighthouse.beacon -}}
@@ -176,11 +180,15 @@ spec:
       - name: lighthouse-vc
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
+        {{- if .Values.lighthouse.testMode }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
+        {{- else }}
         command:
         - lighthouse
-        {{- if .Values.lighthouse.testMode }}
-        - help
-        {{- else }}
         - vc
         args:
         {{ with .Values.lighthouse.validator -}}
