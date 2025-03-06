@@ -4,6 +4,7 @@ storage:
   pvcSize: 10Gi
 
 lighthouse:
+  testMode: true
   beacon:
     resources:
       limits:
@@ -24,8 +25,13 @@ lighthouse:
         tls: []
     checkpointSync:
       enabled: false
+    executionEndpoint:
+      host: 'localhost'
+      port: 8551
+      jwt: 7zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 
   validator:
+    enabled: true
     resources:
       limits:
         cpu: 1

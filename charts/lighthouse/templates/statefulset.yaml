@@ -22,15 +22,22 @@ spec:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
       serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
       containers:
       {{- if $bn }}
       - name: lighthouse-bn
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
+        {{- if .Values.lighthouse.testMode }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
+        {{- else }}
         command:
         - lighthouse
         - beacon
@@ -72,6 +79,9 @@ spec:
         {{- if .purgeDb }}
         - --purge-db
         {{- end }}
+        {{- if .purgeDbForce }}
+        - --purge-db-force
+        {{- end }}
         {{- with .enr }}
         {{- if and .host .port }}
         - --disable-enr-auto-update
@@ -86,7 +96,10 @@ spec:
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
+        {{- end }}
+        {{- end }}
         ports:
+          {{ with .Values.lighthouse.beacon -}}
           {{ if .http.enabled -}}
           - name: http-bn
             containerPort: {{ .http.port }}
@@ -116,22 +129,37 @@ spec:
           successThreshold: 1
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         readinessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         startupProbe:
           initialDelaySeconds: 120
           exec:
             command:
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
             - cat
             - /chaindata/beacon/network/enr.dat
+            {{- end }}
         resources:
           {{- toYaml .Values.lighthouse.beacon.resources | nindent 10 }}
         securityContext:
@@ -152,6 +180,13 @@ spec:
       - name: lighthouse-vc
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
+        {{- if .Values.lighthouse.testMode }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
+        {{- else }}
         command:
         - lighthouse
         - vc
@@ -181,7 +216,10 @@ spec:
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
+        {{- end }}
+        {{- end }}
         ports:
+          {{ with .Values.lighthouse.validator -}}
           {{ if .http.enabled -}}
           - name: http-vc
             containerPort: {{ .http.port }}
@@ -192,30 +230,44 @@ spec:
             containerPort: {{ .metricsPort }}
             protocol: TCP
           {{- end }}
-        {{- end }}
-        {{- end }}
+          {{- end }}
         livenessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         readinessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         startupProbe:
           initialDelaySeconds: 120
           exec:
             command:
-            - cat
-            - /chaindata/beacon/network/enr.dat
+            {{- if .Values.lighthouse.testMode }}
+            - echo
+            - "test mode"
+            {{- else }}
+            - ls
+            - /chaindata
+            {{- end }}
         resources:
           {{- toYaml .Values.lighthouse.validator.resources | nindent 10 }}
         securityContext:
@@ -229,6 +281,7 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -247,7 +300,9 @@ spec:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
+      {{- if .Values.storage.storageClassName }}
       storageClassName: {{ .Values.storage.storageClassName }}
+      {{- end }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:

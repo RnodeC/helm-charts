@@ -17,9 +17,9 @@ spec:
 {{ include "geth.labels" . | indent 8 }}
     spec:
       serviceAccountName: {{ include "geth.serviceAccountName" . }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
       containers:
       - name: geth
@@ -80,7 +80,7 @@ spec:
           {{- if .metrics.enabled }}
           - name: metrics
             containerPort: {{ .metrics.port }}
-            protol: TCP
+            protocol: TCP
           {{- end }}
         {{- end }}
         livenessProbe:
@@ -130,7 +130,9 @@ spec:
       labels:
 {{ include "geth.labels" . | indent 8 }}
     spec:
+      {{- if .Values.storage.storageClassName }}
       storageClassName: {{ .Values.storage.storageClassName }}
+      {{- end }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
