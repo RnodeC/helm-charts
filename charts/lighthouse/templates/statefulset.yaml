@@ -89,10 +89,10 @@ spec:
         {{- end }}
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
+        {{- end }}
         {{- if .extraArgs }}
         {{- range .extraArgs }}
         - {{ . }}
-        {{- end }}
         {{- end }}
         {{- end }}
         {{- else }}
@@ -101,6 +101,7 @@ spec:
         - -c
         args:
         - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
+        {{- end }}
         {{- end }}
         ports:
           {{ with .Values.lighthouse.beacon -}}
@@ -213,7 +214,6 @@ spec:
         - --unencrypted-http-transport
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
-        {{- end }}
         {{- end }}
         {{- if .extraArgs }}
         {{- range .extraArgs }}
