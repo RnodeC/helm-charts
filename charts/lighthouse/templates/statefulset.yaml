@@ -89,12 +89,10 @@ spec:
         {{- end }}
         {{- if $monitoringEndpoint }}
         - --monitoring-endpoint={{- $monitoringEndpoint }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
         {{- if .extraArgs }}
         {{- range .extraArgs }}
         - {{ . }}
+        {{- end }}
         {{- end }}
         {{- end }}
         {{- else }}
@@ -217,7 +215,6 @@ spec:
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
         {{- end }}
-        {{- end }}
         {{- if .extraArgs }}
         {{- range .extraArgs }}
         - {{ . }}
@@ -319,3 +316,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.storage.pvcSize }}
+{{- end }}
