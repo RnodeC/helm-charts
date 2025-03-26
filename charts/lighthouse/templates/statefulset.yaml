@@ -31,13 +31,7 @@ spec:
       - name: lighthouse-bn
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
-        {{- if .Values.lighthouse.testMode }}
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
-        {{- else }}
+        {{- if not .Values.lighthouse.testMode }}
         command:
         - lighthouse
         - beacon
@@ -97,6 +91,18 @@ spec:
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
         {{- end }}
+        {{- end }}
+        {{- if .extraArgs }}
+        {{- range .extraArgs }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- else }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
         {{- end }}
         ports:
           {{ with .Values.lighthouse.beacon -}}
@@ -180,13 +186,7 @@ spec:
       - name: lighthouse-vc
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
-        {{- if .Values.lighthouse.testMode }}
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
-        {{- else }}
+        {{- if not .Values.lighthouse.testMode }}
         command:
         - lighthouse
         - vc
@@ -217,6 +217,18 @@ spec:
         - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
         {{- end }}
+        {{- end }}
+        {{- if .extraArgs }}
+        {{- range .extraArgs }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- else }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - "lighthouse help && echo 'Test mode - staying alive' && sleep infinity"
         {{- end }}
         ports:
           {{ with .Values.lighthouse.validator -}}

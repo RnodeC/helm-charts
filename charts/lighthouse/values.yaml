@@ -4,6 +4,7 @@ image:
   tag: v6.0.1
 storage:
   pvcSize: 1200Gi
+  storageClassName: local
 tolerations: []
 lighthouse:
   testMode: false
@@ -67,6 +68,7 @@ lighthouse:
     validatorMonitorAuto: true
     prunePayloads: true
     genesisBackfill: false
+    extraArgs: []
   validator:
     enabled: false
     resources:
@@ -95,3 +97,4 @@ lighthouse:
     beaconNodeUrl: http://localhost:5052
     suggestedFeeRecipient:
     graffiti:
+    extraArgs: []
