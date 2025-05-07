@@ -1,7 +1,7 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: v1.15.10
+  tag: v1.15.11
 storage:
   pvcSize: 1200Gi
 tolerations: []
